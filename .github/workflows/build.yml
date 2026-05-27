@@ -1,0 +1,43 @@
+name: Build Android APK
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build APK Package
+        run: |
+          flet build apk --main ai_pass.py
+
+      - name: Upload Finished APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuantumCoreAI-Mobile
+          path: build/apk/*.apk
